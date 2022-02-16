@@ -1,10 +1,12 @@
-import { hash } from 'bcrypt';
+import bcrypt from 'bcrypt';
 
 class SecurityHelper {
 
     async encryptData(data) {
         
-        let hashData = await hash(data, 10);
+        //let salt = await bcrypt.genSalt(10);
+        const salt = '$2b$10$X4kv7j5ZcG39WgogSl16au'
+        let hashData = await bcrypt.hash(data, salt);
         
         return hashData;
     }
@@ -14,9 +16,12 @@ class SecurityHelper {
         let charCount = parseInt(Math.random() * charNumbers) + minCharNumber;
         let maxNumber = parseInt("".padStart(charCount, "9"));
         let token = parseInt(Math.random() * maxNumber);
-        if(token.toString().length < charCount - 3){
-            this.getRandomToken(minCharNumber, maxCharNumber);
-        } else if (this.validateToken(token) == false){
+
+        if(token.toString().length < minCharNumber){
+            token = token.toString().padStart(charCount, "0");
+        } 
+        
+        if (this.validateToken(token) == false){
             this.getRandomToken(minCharNumber, maxCharNumber);
         } else {
             return token;

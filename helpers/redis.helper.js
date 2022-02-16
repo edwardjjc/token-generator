@@ -36,5 +36,13 @@ class RedisHelper {
             console.log("error", err);
         }
     }
+
+    del(key){
+        try{
+            this.client.del(key);
+        } catch(err) {
+            console.log("error", err);
+        }
+    }
 }
 export { RedisHelper };

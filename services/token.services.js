@@ -30,9 +30,28 @@ class TokenServices {
             timestamp: new Date()
         }
 
-        console.log(hash);
-        console.log(tokenModel);
-        redis.set(hash, tokenModel);
+        redis.set(hash, JSON.stringify(tokenModel));
+    }
+
+    async validateToken(token, monto) {
+        let result = { statusCode: 0, result: "" };
+        let encryptData = new SecurityHelper();
+        let redis = new RedisHelper();
+        let hashData = token.toString() + monto.toString();
+        let hash = await encryptData.encryptData(hashData);
+
+        let payload = await redis.get(hash);
+
+        if (!payload) {
+            result.statusCode = 404;
+            result.result = "Token Not Found";
+        } else {
+            redis.del(hash);
+            result.statusCode = 200;
+            result.result = "OK";
+        }
+
+        return result;
     }
 }
 
